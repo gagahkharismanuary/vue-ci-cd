@@ -1,42 +1,38 @@
 version: 2
 
 references:
-  workspace_root: &workspace_root
-    ~/workspace
-
   working_directory: &working_directory
     ~/workspace/code
 
-  attach_workspace: &attach_workspace
-    attach_workspace:
-      at: *workspace_root
-
   node_container: &node_container
-    docker:
-      - image: circleci/node:10.13.0-stretch
-    working_directory: *working_directory
+   docker:
+     - image: circleci/node:10.13.0-stretch
+   working_directory: *working_directory
+  
+  workspace_root: &workspace_root
+    ~/workspace
 
 jobs:
   build:
-  <<: *node_container
-  steps:
-    - checkout
-    - run:
-        name: Install Dependencies
-        command: yarn install
-    - run:
-        name: Build
-        command: yarn build
-    - persist_to_workspace:
-        root: ~/workspace
-        paths:
-          - code
+    <<: *node_container
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: yarn install
+      - run:
+          name: Build
+          command: yarn build
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - code
 
   test:
     <<: *node_container
     steps:
       - attach_workspace:
-          at: ~/workspace
+          at: *workspace_root
       - run:
           name: Unit Test
           command: yarn test:unit
@@ -45,7 +41,7 @@ workflows:
   version: 2
   build-test:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+     - build
+     - test:
+        requires:
+          - build
