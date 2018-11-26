@@ -1,0 +1,16 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10.13.0-stretch
+    working_directory: ~/workspace/code  
+    steps:
+      - checkout
+      - run:
+          name: install Depedencies
+          command: yarn install
+
+      - run:
+          name: Build
+          command: yarn build
